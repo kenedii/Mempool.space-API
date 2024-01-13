@@ -1,30 +1,30 @@
-import MempoolAPI
+from MempoolAPI import MempoolAPI
 import requests
 
 
 class Address:
-
+    @staticmethod
     def Address(address):
         # Returns details about an address.
         # Available fields: address, chain_stats, and mempool_stats.
         # chain_stats and mempool_stats each contain an object with tx_count,
         # funded_txo_count, funded_txo_sum, spent_txo_count, and spent_txo_sum.
 
-        response = requests.get(f'https://mempool.space/api/address/1{address}')
+        response = requests.get(f'https://mempool.space/api/address/{address}')
         # Check if the request was successful (status code 200)
         json_data = MempoolAPI.validateResponse(response)
 
-        chain_stats = {'funded_txo_count': json_data['funded_txo_count'],
-                       'funded_txo_sum': json_data['funded_txo_sum'],
-                       'spent_txo_count': json_data['spent_txo_count'],
-                       'spent_txo_sum': json_data['spent_txo_sum'],
-                       'tx_count': json_data['tx_count'],
+        chain_stats = {'funded_txo_count': json_data['chain_stats']['funded_txo_count'],
+                       'funded_txo_sum': json_data['chain_stats']['funded_txo_sum'],
+                       'spent_txo_count': json_data['chain_stats']['spent_txo_count'],
+                       'spent_txo_sum': json_data['chain_stats']['spent_txo_sum'],
+                       'tx_count': json_data['chain_stats']['tx_count'],
                        }
-        mempool_stats = {'funded_txo_count': json_data['funded_txo_count'],
-                         'funded_txo_sum': json_data['funded_txo_sum'],
-                         'spent_txo_count': json_data['spent_txo_count'],
-                         'spent_txo_sum': json_data['spent_txo_sum'],
-                         'tx_count': json_data['tx_count'],
+        mempool_stats = {'funded_txo_count': json_data['mempool_stats']['funded_txo_count'],
+                         'funded_txo_sum': json_data['mempool_stats']['funded_txo_sum'],
+                         'spent_txo_count': json_data['mempool_stats']['spent_txo_count'],
+                         'spent_txo_sum': json_data['mempool_stats']['spent_txo_sum'],
+                         'tx_count': json_data['mempool_stats']['tx_count'],
                          }
         info = {'chain_stats': chain_stats,
                 'mempool_stats': mempool_stats
@@ -32,6 +32,7 @@ class Address:
                 }
         return info
 
+    @staticmethod
     def Txs(address):
         # Get transaction history for the specified address/scripthash, sorted with newest first.
         # Returns up to 50 mempool transactions plus the first 25 confirmed transactions.
@@ -45,7 +46,7 @@ class Address:
             vin, vout = MempoolAPI.inputOutputBuilder(json_data[tx])
 
             if json_data[tx]['status']['confirmed'] == False:  # Build the dictionary for transaction status
-                status = {'confirmed' == False}
+                status = {'confirmed': False}
             else:
                 status = {'confirmed': True,
                           'block_height': json_data[tx]['status']['block_height'],
@@ -65,6 +66,7 @@ class Address:
 
         return transactions
 
+    @staticmethod
     def TxsChain(address):
         # Get confirmed transaction history for the specified address/scripthash, sorted with newest first.
         # Returns 25 transactions per page. More can be requested by specifying the last txid seen by the previous query.
@@ -94,6 +96,7 @@ class Address:
 
         return transactions
 
+    @staticmethod
     def TxsMempool(address):
         # Get unconfirmed transaction history for the specified address/scripthash.
         # Returns up to 50 transactions (no paging).
@@ -118,6 +121,7 @@ class Address:
 
         return transactions
 
+    @staticmethod
     def AddressUTXO(address):
         # Get the list of unspent transaction outputs associated with the address/scripthash.
         # Available fields: txid, vout, value, and status (with the status of the funding tx).
@@ -130,7 +134,7 @@ class Address:
             vin, vout = MempoolAPI.inputOutputBuilder(json_data[tx])
 
             if not json_data[tx]['status']['confirmed']:  # Build the dictionary for transaction status
-                status = {'confirmed' == False}
+                status = {'confirmed': False}
             status = {'confirmed': True,  # Build the dictionary for transaction status
                       'block_height': json_data[tx]['status']['block_height'],
                       'block_hash': json_data[tx]['status']['block_hash'],
@@ -144,6 +148,7 @@ class Address:
 
         return transactions
 
+    @staticmethod
     def AddressValidation(address):
         # Returns whether an address is valid or not.
         # Available fields: isvalid (boolean), address (string), scriptPubKey (string),
