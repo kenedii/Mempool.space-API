@@ -7,7 +7,6 @@ class MempoolAPI:
         if response.status_code == 200:
             # Parse JSON data from the response
             json_data = response.json()
-            print(json_data)
             return json_data
         else:  # If error getting json data
             raise Exception('Error retrieving json data. Invalid Parameters or API Endpoint is down.')
@@ -27,14 +26,13 @@ class MempoolAPI:
 
                                              }
         for i in range(len(json_data['vout'])):
-            vin[str(json_data['vout'][i])] = {'scriptpubkey': json_data['vout'][i]['scriptpubkey'],
-                                              'scriptpubkey_asm': json_data['vout'][i]['scriptpubkey_asm'],
-                                              'scriptpubkey_type': json_data['vout'][i]['scriptpubkey_type'],
-                                              'scriptpubkey_address': json_data['vout'][i][
-                                                  'scriptpubkey_address'],
-                                              'value': json_data['vout'][i]['value']
-
-                                              }
+            vout[str(json_data['vout'][i])] = {'scriptpubkey': json_data['vout'][i]['scriptpubkey'],
+                                               'scriptpubkey_asm': json_data['vout'][i]['scriptpubkey_asm'],
+                                               'scriptpubkey_type': json_data['vout'][i]['scriptpubkey_type'],
+                                               'value': json_data['vout'][i]['value']
+                                               }
+            if json_data['vout'][i]['scriptpubkey_type'] != 'op_return':
+                vout[str(json_data['vout'][i])]['scriptpubkey_address'] = json_data['vout'][i]['scriptpubkey_address']
         return vin, vout
 
     @staticmethod
