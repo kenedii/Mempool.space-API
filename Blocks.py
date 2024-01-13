@@ -2,8 +2,6 @@ from MempoolAPI import MempoolAPI
 import requests
 import os
 import urllib.request
-import time
-
 
 class Block:
     @staticmethod
