@@ -38,7 +38,6 @@ class MempoolAPI:
     @staticmethod
     def DifficultyAdjustment():  # Returns details about difficulty adjustment.
         response = requests.get("https://mempool.space/api/v1/difficulty-adjustment")
-        # Check if the request was successful (status code 200)
         json_data = MempoolAPI.validateResponse(response)
 
         info = {'progressPercent': json_data['progressPercent'],
@@ -57,7 +56,6 @@ class MempoolAPI:
     @staticmethod
     def Price():  # Returns bitcoin latest price denominated in main currencies.
         response = requests.get("https://mempool.space/api/v1/prices")
-        # Check if the request was successful (status code 200)
         json_data = MempoolAPI.validateResponse(response)
 
         info = {'time': json_data['time'],
@@ -71,3 +69,39 @@ class MempoolAPI:
                 }
 
         return info
+
+    @staticmethod
+    def RecommendedFees(): # Returns Mempool.space's currently suggested fees for new transactions.
+        response = requests.get("https://mempool.space/api/v1/fees/recommended")
+        json_data = MempoolAPI.validateResponse(response)
+        info = {'fastestFee': json_data['fastestFee'],
+                'halfHourFee': json_data['halfHourFee'],
+                'hourFee': json_data['hourFee'],
+                'economyFee': json_data['economyFee'],
+                'minimumFee': json_data['minimumFee']
+                }
+
+        return info
+
+    @staticmethod
+    def MempoolBlocksFees(): # Returns current mempool as projected blocks.
+        response = requests.get("https://mempool.space/api/v1/fees/mempool-blocks")
+        json_data = MempoolAPI.validateResponse(response)
+        blocks = [] # Initialize the array containing projected blocks
+        for blok in range(len(json_data)): # Iterate through all the blocks
+            block = {'blockSize': json_data[blok]['blockSize'],
+                     'blockVSize': json_data[blok]['blockVSize'],
+                     'nTx': json_data[blok]['nTx'],
+                     'totalFees': json_data[blok]['totalFees'],
+                     'medianFee': json_data[blok]['medianFee'],
+                     }
+            feeRange = [] # Initialize the array containing fee Ranges
+            for fr in range(len(json_data[blok]['feeRange'])): # Iterate through all the fee ranges
+                feeRange.append(json_data[blok]['feeRange'][fr])
+            block['feeRange'] = feeRange
+            blocks.append(block)
+        return blocks
+
+
+
+
