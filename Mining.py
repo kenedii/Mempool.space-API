@@ -65,3 +65,37 @@ class Mining:
         info['blockCount'] = blockCount
         info['blockShare'] = blockShare
         return info
+
+    @staticmethod
+    def Hashrates(timePeriod=''):
+        # Returns average hashrates (and share of total hashrate) of mining pools active in
+        # the specified trailing timePeriod, in descending order of hashrate.
+        # Leave :timePeriod unspecified to get all available data,
+        # or specify any of the following time periods: 1m, 3m, 6m, 1y, 2y, 3y.
+
+        response = requests.get(f'https://mempool.space/api/v1/mining/hashrate/pools/{timePeriod}')
+        json_data = MempoolAPI.validateResponse(response)
+        pools = []  # Initialize the array of pool hashrates
+        for pool in range(len(json_data)):
+            info = {'timestamp': json_data[pool]['timestamp'],
+                    'avgHashrate': json_data[pool]['avgHashrate'],
+                    'share': json_data[pool]['share'],
+                    'poolName': json_data[pool]['poolName']}
+            pools.append(info)
+        return pools
+
+    @staticmethod
+    def Hashrate(slug):
+        # Returns all known hashrate data for the mining pool specified by slug.
+        # Hashrate values are weekly averages.
+
+        response = requests.get(f'https://mempool.space/api/v1/mining/pool/{slug}/hashrate')
+        json_data = MempoolAPI.validateResponse(response)
+        pools = []  # Initialize the array of hashrates
+        for hashrate in range(len(json_data)):
+            info = {'timestamp': json_data[hashrate]['timestamp'],
+                    'avgHashrate': json_data[hashrate]['avgHashrate'],
+                    'share': json_data[hashrate]['share'],
+                    'poolName': json_data[hashrate]['poolName']}
+            pools.append(info)
+        return pools
