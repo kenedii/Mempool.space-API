@@ -184,3 +184,18 @@ class Mining:
             hashrates.append(rates)
         info['hashrates'] = hashrates
         return info
+
+    @staticmethod
+    def DifficultyAdjustments(interval='1m'):
+        # Returns the record of difficulty adjustments over the specified trailing :interval:
+        # Block timestamp, Block height,Difficulty, Difficulty change
+        # If no time interval is specified, all available data is returned.
+        response = requests.get(f'https://mempool.space/api/v1/mining/difficulty-adjustments/{interval}')
+        json_data = MempoolAPI.validateResponse(response)
+        adjustments = []
+        for entry in range(len(json_data)):  # Iterate through the outer iterable
+            for entry2 in range(len(json_data[entry])):  # Iterate through the inner iterables
+                diff = []
+                diff.append(json_data[entry][entry2])
+            adjustments.append(diff)
+        return adjustments
