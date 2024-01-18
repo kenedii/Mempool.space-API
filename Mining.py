@@ -99,3 +99,88 @@ class Mining:
                     'poolName': json_data[hashrate]['poolName']}
             pools.append(info)
         return pools
+
+    @staticmethod
+    def PoolBlock(slug, blockheight=''):
+        # Returns past 10 blocks mined by the specified mining pool (slug) before the
+        # specified blockHeight. If no blockHeight is specified, the mining
+        # pool's 10 most recent blocks are returned.
+
+        response = requests.get(f'https://mempool.space/api/v1/mining/pool/{slug}/blocks/{blockheight}')
+        json_data = MempoolAPI.validateResponse(response)
+        blocks = []
+        for blockPosition in range(len(json_data)):  # Iterate through blocks
+            info = {'id': json_data[blockPosition]['id'],
+                    'height': json_data[blockPosition]['height'],
+                    'version': json_data[blockPosition]['version'],
+                    'timestamp': json_data[blockPosition]['timestamp'],
+                    'bits': json_data[blockPosition]['bits'],
+                    'nonce': json_data[blockPosition]['nonce'],
+                    'difficulty': json_data[blockPosition]['difficulty'],
+                    'merkle_root': json_data[blockPosition]['merkle_root'],
+                    'tx_count': json_data[blockPosition]['tx_count'],
+                    'size': json_data[blockPosition]['size'],
+                    'weight': json_data[blockPosition]['weight'],
+                    'previousblockhash': json_data[blockPosition]['previousblockhash'],
+                    'mediantime': json_data[blockPosition]['mediantime'],
+                    'totalFees': json_data[blockPosition]['extras']['totalFees'],
+                    'medianFee': json_data[blockPosition]['extras']['medianFee'],
+                    'reward': json_data[blockPosition]['extras']['reward'],
+                    'avgFee': json_data[blockPosition]['extras']['avgFee'],
+                    'avgFeeRate': json_data[blockPosition]['extras']['avgFeeRate'],
+                    'coinbaseRaw': json_data[blockPosition]['extras']['coinbaseRaw'],
+                    'coinbaseAddress': json_data[blockPosition]['extras']['coinbaseAddress'],
+                    'coinbaseSignature': json_data[blockPosition]['extras']['coinbaseSignature'],
+                    'coinbaseSignatureAscii': json_data[blockPosition]['extras']['coinbaseSignatureAscii'],
+                    'avgTxSize': json_data[blockPosition]['extras']['avgTxSize'],
+                    'totalInputs': json_data[blockPosition]['extras']['totalInputs'],
+                    'totalOutputs': json_data[blockPosition]['extras']['totalOutputs'],
+                    'totalOutputAmt': json_data[blockPosition]['extras']['totalOutputAmt'],
+                    'medianFeeAmt': json_data[blockPosition]['extras']['medianFeeAmt'],
+                    'segwitTotalTxs': json_data[blockPosition]['extras']['segwitTotalTxs'],
+                    'segwitTotalSize': json_data[blockPosition]['extras']['segwitTotalSize'],
+                    'segwitTotalWeight': json_data[blockPosition]['extras']['segwitTotalWeight'],
+                    'header': json_data[blockPosition]['extras']['header'],
+                    'utxoSetChange': json_data[blockPosition]['extras']['utxoSetChange'],
+                    'utxoSetSize': json_data[blockPosition]['extras']['utxoSetSize'],
+                    'totalInputAmt': json_data[blockPosition]['extras']['totalInputAmt'],
+                    'virtualSize': json_data[blockPosition]['extras']['virtualSize'],
+                    'orphans': json_data[blockPosition]['extras']['orphans'],
+                    'matchRate': json_data[blockPosition]['extras']['matchRate'],
+                    'expectedFees': json_data[blockPosition]['extras']['expectedFees'],
+                    'expectedWeight': json_data[blockPosition]['extras']['expectedWeight'],
+                    }
+            feeRanges = []
+            for feeRange in range(len(json_data[blockPosition]['extras']['feeRange'])):
+                feeRanges.append(json_data[blockPosition]['extras']['feeRange'][feeRange])
+            info['feeRange'] = feeRanges
+            feePercentiles = []
+            for feePercentile in range(len(json_data[blockPosition]['extras']['feePercentiles'])):
+                feePercentiles.append(json_data[blockPosition]['extras']['feePercentiles'][feePercentile])
+            info['feePercentiles'] = feePercentiles
+            pool = {'id': json_data[blockPosition]['extras']['pool']['id'],
+                    'name': json_data[blockPosition]['extras']['pool']['name'],
+                    'slug': json_data[blockPosition]['extras']['pool']['slug']}
+            info['pool'] = pool
+        blocks.append(info)
+        return blocks
+
+    @staticmethod
+    def NetworkHashrate(timeperiod=''):
+        # Returns network-wide hashrate and difficulty figures over the specified trailing timePeriod
+        # -Current (real-time) hashrate, -Current (real-time) difficulty,
+        # -Historical daily average hashrates, -Historical difficulty
+        # Valid values for :timePeriod are 1m, 3m, 6m, 1y, 2y, 3y. If no time interval is specified, all available data is returned.
+        response = requests.get(f'https://mempool.space/api/v1/mining/hashrate/{timeperiod}')
+        json_data = MempoolAPI.validateResponse(response)
+        info = {'difficulty': json_data['difficulty'],
+                'currentHashrate': json_data['currentHashrate'],
+                'currentDifficulty': json_data['currentDifficulty'],
+                }
+        hashrates = []
+        for hashrate in range(len(json_data['hashrates'])):
+            rates = {'timestamp': json_data['hashrates'][hashrate]['timestamp'],
+                     'avgHashrate': json_data['hashrates'][hashrate]['avgHashrate']}
+            hashrates.append(rates)
+        info['hashrates'] = hashrates
+        return info
