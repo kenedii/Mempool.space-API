@@ -166,7 +166,7 @@ class Mining:
         return blocks
 
     @staticmethod
-    def NetworkHashrate(timeperiod=''):
+    def NetworkHashrate(timePeriod=''):
         # Returns network-wide hashrate and difficulty figures over the specified trailing timePeriod
         # -Current (real-time) hashrate, -Current (real-time) difficulty,
         # -Historical daily average hashrates, -Historical difficulty
@@ -187,15 +187,117 @@ class Mining:
 
     @staticmethod
     def DifficultyAdjustments(interval='1m'):
-        # Returns the record of difficulty adjustments over the specified trailing :interval:
+        # Returns the record of difficulty adjustments over the specified trailing interval
         # Block timestamp, Block height,Difficulty, Difficulty change
         # If no time interval is specified, all available data is returned.
         response = requests.get(f'https://mempool.space/api/v1/mining/difficulty-adjustments/{interval}')
         json_data = MempoolAPI.validateResponse(response)
         adjustments = []
         for entry in range(len(json_data)):  # Iterate through the outer iterable
+            diff = []
             for entry2 in range(len(json_data[entry])):  # Iterate through the inner iterables
-                diff = []
                 diff.append(json_data[entry][entry2])
             adjustments.append(diff)
         return adjustments
+
+    @staticmethod
+    def RewardStats(blockcount='100'):
+        # Returns block reward and total transactions confirmed for the past blockCount blocks.
+        response = requests.get(f'https://mempool.space/api/v1/mining/reward-stats/{blockcount}')
+        json_data = MempoolAPI.validateResponse(response)
+        info = {'startBlock': json_data['startBlock'],
+                'endBlock': json_data['endBlock'],
+                'totalReward': int(json_data['totalReward']),
+                'totalFee': int(json_data['94202990908']),
+                'totalTx': int(json_data['3866808']),
+                }
+        return info
+
+    @staticmethod
+    def BlockFees(timePeriod='24h'):
+        # Returns average total fees for blocks in the specified :timePeriod, ordered oldest to newest.
+        # timePeriod can be any of the following: 24h, 3d, 1w, 1m, 3m, 6m, 1y, 2y, 3y.
+        # For 24h and 3d time periods, every block is included and fee amounts are exact (not averages).
+        # For the 1w time period, fees may be averages depending on how fast blocks were found
+        # around a particular timestamp. For other time periods, fees are averages.
+
+        response = requests.get(f'https://mempool.space/api/v1/mining/blocks/fees/{timePeriod}')
+        json_data = MempoolAPI.validateResponse(response)
+        fees = []
+        for block in range(len(json_data)):
+            info = {'avgHeight': json_data[block]['avgHeight'],
+                    'timestamp': json_data[block]['timestamp'],
+                    'avgFees': json_data[block]['avgFees'],
+                    'USD': json_data[block]['USD'],
+                    }
+            fees.append(info)
+        return fees
+
+    @staticmethod
+    def BlockRewards(timePeriod='24h'):
+        # Returns average block rewards for blocks in the specified timePeriod,
+        # ordered oldest to newest. timePeriod can be any of the following: 24h, 3d, 1w, 1m, 3m, 6m, 1y, 2y, 3y.
+        # For 24h and 3d time periods, every block is included and block rewards are exact (not averages).
+        # For the 1w time period, block rewards may be averages depending on how fast blocks were found around a particular timestamp.
+        # For other time periods, block rewards are averages.
+
+        response = requests.get(f'https://mempool.space/api/v1/mining/blocks/rewards/{timePeriod}')
+        json_data = MempoolAPI.validateResponse(response)
+        rewards = []
+        for block in range(len(json_data)):
+            info = {'avgHeight': json_data[block]['avgHeight'],
+                    'timestamp': json_data[block]['timestamp'],
+                    'avgRewards': json_data[block]['avgRewards'],
+                    'USD': json_data[block]['USD'],
+                    }
+            rewards.append(info)
+        return rewards
+
+    @staticmethod
+    def BlockFeerates(timePeriod='24h'):
+        # Returns average feerate percentiles for blocks in the specified timePeriod, ordered oldest to newest.
+        # timePeriod can be any of the following: 24h, 3d, 1w, 1m, 3m, 6m, 1y, 2y, 3y.
+        # For 24h and 3d time periods, every block is included and percentiles are exact (not averages).
+        # For the 1w time period, percentiles may be averages depending on how fast blocks were found around a particular timestamp.
+        # For other time periods, percentiles are averages.
+
+        response = requests.get(f'https://mempool.space/api/v1/mining/blocks/fee-rates/{timePeriod}')
+        json_data = MempoolAPI.validateResponse(response)
+        feerates = []
+        for block in range(len(json_data)):
+            info = {'avgHeight': json_data[block]['avgHeight'],
+                    'timestamp': json_data[block]['timestamp'],
+                    'avgFee_0': json_data[block]['avgFee_0'],
+                    'avgFee_10': json_data[block]['avgFee_10'],
+                    'avgFee_25': json_data[block]['avgFee_25'],
+                    'avgFee_50': json_data[block]['avgFee_50'],
+                    'avgFee_75': json_data[block]['avgFee_75'],
+                    'avgFee_90': json_data[block]['avgFee_90'],
+                    'avgFee_100': json_data[block]['avgFee_100']}
+            feerates.append(info)
+        return feerates
+
+    @staticmethod
+    def BlockSizesWeights(timePeriod='24h'):
+        # Returns array representing a block [[size, weight], [size, weight]]
+        # Returns average size (bytes) and average weight (weight units) for blocks in the specified timePeriod, ordered oldest to newest.
+        # timePeriod can be any of the following: 24h, 3d, 1w, 1m, 3m, 6m, 1y, 2y, 3y.
+        # For 24h and 3d time periods, every block is included and figures are exact (not averages).
+        # For the 1w time period, figures may be averages depending on how fast blocks were found around a particular timestamp.
+        # For other time periods, figures are averages.
+
+        response = requests.get(f'https://mempool.space/api/v1/mining/blocks/sizes-weights/{timePeriod}')
+        json_data = MempoolAPI.validateResponse(response)
+        blocks = []
+
+        for block in range(len(json_data['sizes'])):
+            size = {'avgHeight': json_data['sizes'][block]['avgHeight'],
+                    'timestamp': json_data['sizes'][block]['timestamp'],
+                    'avgSize': json_data['sizes'][block]['avgSize']}
+
+            weight = {'avgHeight': json_data['weights'][block]['avgHeight'],
+                      'timestamp': json_data['weights'][block]['timestamp'],
+                      'avgWeight': json_data['weights'][block]['avgWeight']}
+
+            blocks.append([size,weight])
+        return blocks
