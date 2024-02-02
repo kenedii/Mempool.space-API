@@ -299,20 +299,20 @@ class Mining:
                       'timestamp': json_data['weights'][block]['timestamp'],
                       'avgWeight': json_data['weights'][block]['avgWeight']}
 
-            blocks.append([size,weight])
+            blocks.append([size, weight])
         return blocks
 
     @staticmethod
-    def BlockPredictions(timePeriod='24h'): # https://mempool.space/docs/api/rest#get-block-predictions
+    def BlockPredictions(timePeriod='24h'):  # https://mempool.space/docs/api/rest#get-block-predictions
         response = requests.get(f'https://mempool.space/api/v1/mining/blocks/predictions/{timePeriod}')
         json_data = MempoolAPI.validateResponse(response)
         blocks = []
         for block in range(len(json_data)):
-            blocks.append([json_data[block][0],json_data[block][1],json_data[block][2]])
+            blocks.append([json_data[block][0], json_data[block][1], json_data[block][2]])
         return blocks
 
     @staticmethod
-    def BlockAuditScore(blockHash): # https://mempool.space/docs/api/rest#get-block-audit-score
+    def BlockAuditScore(blockHash):  # https://mempool.space/docs/api/rest#get-block-audit-score
         # Returns: hash, matchrate, expectedfees and expectedweight for a block
         response = requests.get(f'https://mempool.space/api/v1/mining/blocks/audit/score/{blockHash}')
         json_data = MempoolAPI.validateResponse(response)
@@ -322,36 +322,32 @@ class Mining:
     def AuditScores(startHeight):  # https://mempool.space/docs/api/rest#get-block-audit-score
         response = requests.get(f'https://mempool.space/api/v1/mining/blocks/audit/scores/{startHeight}')
         json_data = MempoolAPI.validateResponse(response)
-        scores=[]
+        scores = []
         for i in range(len(json_data)):
-            scores.append([json_data[i]['hash'], json_data[i]['matchRate'], json_data[i]['expectedFees'], json_data[i]['expectedWeight']])
+            scores.append([json_data[i]['hash'], json_data[i]['matchRate'], json_data[i]['expectedFees'],
+                           json_data[i]['expectedWeight']])
         return scores
 
     @staticmethod
-    def AuditSummary(blockHash): # https://mempool.space/docs/api/rest#get-block-audit-summary
+    def AuditSummary(blockHash):  # https://mempool.space/docs/api/rest#get-block-audit-summary
         response = requests.get(f'https://mempool.space/api/v1/block/{blockHash}/audit-summary')
         json_data = MempoolAPI.validateResponse(response)
-        summary = {'height' : json_data['height'],
-                   'id' : json_data['height'],
-                   'timestamp' : json_data['height'],
-                   'missingTxs' : json_data['height'],
-                   'freshTxs' : json_data['height'],
-                   'sigopTxs' : json_data['height'],
-                   'fullrbfTxs' : json_data['height'],
-                   'acceleratedTxs' : json_data['acceleratedTxs'],
-                   'matchRate' : json_data['matchRate'],
-                   'expectedFees' : json_data['expectedFees'],
-                   'expectedWeight' : json_data['expectedWeight'],}
+        summary = {'height': json_data['height'],
+                   'id': json_data['height'],
+                   'timestamp': json_data['height'],
+                   'matchRate': json_data['matchRate'],
+                   'expectedFees': json_data['expectedFees'],
+                   'expectedWeight': json_data['expectedWeight'], }
         template = []
         for i in range(len(json_data['template'])):
-            tx = {'txid' : json_data['template'][i]['txid'],
-                  'fee' : json_data['template'][i]['fee'],
-                  'vsize' : json_data['template'][i]['vsize'],
-                  'value' : json_data['template'][i]['value'],
-                  'rate' : json_data['template'][i]['rate'],
-                  'flags' : json_data['template'][i]['flags']}
+            tx = {'txid': json_data['template'][i]['txid'],
+                  'fee': json_data['template'][i]['fee'],
+                  'vsize': json_data['template'][i]['vsize'],
+                  'value': json_data['template'][i]['value'],
+                  'rate': json_data['template'][i]['rate'],
+                  'flags': json_data['template'][i]['flags']}
             template.append(tx)
-        summary['template'].append(template)
+        summary['template'] = template
 
         txCategories = ['missingTxs', 'addedTxs', 'freshTxs', 'sigopTxs', 'fullrbfTxs', 'acceleratedTxs']
         for i in range(6):
