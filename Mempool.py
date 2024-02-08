@@ -49,8 +49,15 @@ class Mempool(MempoolAPI):
         response = requests.get(f'https://mempool.space/api/mempool/replacements')
         json_data = MempoolAPI.validateResponse(response)
         replacements = []
+        replaces = []
 
         for tx in range(len(json_data)):
             tx = [json_data[tx]['tx']['txid'], json_data[tx]['tx']['fee'], json_data[tx]['tx']['vsize'], json_data[tx]['tx']['value'], json_data[tx]['tx']['rate'], json_data[tx]['tx']['rbf'], json_data[tx]['tx']['fullRbf'], json_data[tx]['time'], json_data[tx]['fullRbf']]
+
+            for replace in range(len(json_data['replaces'])):
+                replace = [json_data[tx]['replaces'][replace]['txid'], json_data[tx]['replaces'][replace]['fee'], json_data[tx]['replaces'][replace]['vsize'], json_data[tx]['replaces'][replace]['value'], json_data[tx]['replaces'][replace]['rate'], json_data[tx]['replaces'][replace]['rbf'], json_data[tx]['replaces'][replace]['time'], json_data[tx]['replaces'][replace]['interval'], json_data[tx]['replaces'][replace]['fullRbf'], json_data[tx]['replaces'][replace]['replaces']]
+                tx.append(replace)
             replacements.append(tx)
+
+
         return replacements
