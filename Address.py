@@ -2,7 +2,7 @@ from MempoolAPI import MempoolAPI
 import requests
 
 
-class Address:
+class Address(MempoolAPI):
     @staticmethod
     def Address(address):
         # Returns details about an address.

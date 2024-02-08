@@ -3,7 +3,7 @@ import requests
 import os
 import urllib.request
 
-class Block:
+class Block(MempoolAPI):
     @staticmethod
     def Block(hash):  # Returns details about a block.
         response = requests.get(f'https://mempool.space/api/block/{hash}')

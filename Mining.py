@@ -4,7 +4,7 @@ import os
 import urllib.request
 
 
-class Mining:
+class Mining(MempoolAPI):
 
     @staticmethod
     def Pools(timePeriod=''):
