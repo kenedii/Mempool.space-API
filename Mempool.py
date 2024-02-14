@@ -45,19 +45,40 @@ class Mempool(MempoolAPI):
         return recent
     
     @staticmethod
-    def Replacements():
-        response = requests.get(f'https://mempool.space/api/mempool/replacements')
-        json_data = MempoolAPI.validateResponse(response)
+    def extract_replacements(tx_data): # used by other Replacements methods, not meant to be called directly
         replacements = []
-        replaces = []
 
-        for tx in range(len(json_data)):
-            tx = [json_data[tx]['tx']['txid'], json_data[tx]['tx']['fee'], json_data[tx]['tx']['vsize'], json_data[tx]['tx']['value'], json_data[tx]['tx']['rate'], json_data[tx]['tx']['rbf'], json_data[tx]['tx']['fullRbf'], json_data[tx]['time'], json_data[tx]['fullRbf']]
+        for tx in tx_data:
+            tx_info = {  
+                'txid': tx.get('txid', ''),
+                'fee': tx.get('fee', 0),
+                'vsize': tx.get('vsize', 0),
+                'value': tx.get('value', 0),
+                'rate': tx.get('rate', 0),
+                'rbf': tx.get('rbf', False),
+                'time': tx.get('time', 0),
+                'fullRbf': tx.get('fullRbf', False),
+            }
 
-            for replace in range(len(json_data['replaces'])):
-                replace = [json_data[tx]['replaces'][replace]['txid'], json_data[tx]['replaces'][replace]['fee'], json_data[tx]['replaces'][replace]['vsize'], json_data[tx]['replaces'][replace]['value'], json_data[tx]['replaces'][replace]['rate'], json_data[tx]['replaces'][replace]['rbf'], json_data[tx]['replaces'][replace]['time'], json_data[tx]['replaces'][replace]['interval'], json_data[tx]['replaces'][replace]['fullRbf'], json_data[tx]['replaces'][replace]['replaces']]
-                tx.append(replace)
-            replacements.append(tx)
+            replaces = tx.get('replaces', [])
+            if replaces:
+                tx_info['replaces'] = replaces
+                replacements.extend(Mempool.extract_replacements(replaces))
 
+            replacements.append(tx_info)
 
         return replacements
+    
+    @staticmethod
+    def Replacements():
+        response = requests.get('https://mempool.space/api/v1/replacements')
+        json_data = MempoolAPI.validateResponse(response)
+
+        return Mempool.extract_replacements(json_data)
+    
+    @staticmethod
+    def FullRBF(): # https://mempool.space/docs/api/rest#get-mempool-fullrbf
+        response = requests.get('https://mempool.space/api/v1/fullrbf/replacements')
+        json_data = MempoolAPI.validateResponse(response)
+
+        return Mempool.extract_replacements(json_data)
