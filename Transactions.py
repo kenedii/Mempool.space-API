@@ -16,9 +16,13 @@ class Transactions(MempoolAPI):
     
     @staticmethod
     def Hex(txid):
-        response = requests.get(f'https://mempool.space/api/tx/{txid}/hex')
-        json_data = MempoolAPI.validateResponse(response)
-        return json_data
+        url = f'https://mempool.space/api/tx/{txid}/hex'
+        response = requests.get(url)
+        # Check for successful response status code
+        if response.status_code != 200:
+            raise requests.exceptions.RequestException(f"Error: API request failed. Status code: {response.status_code}")
+
+        return response.text
     
     @staticmethod
     def MerkleblockProof(txid):
