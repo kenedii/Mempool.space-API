@@ -50,11 +50,26 @@ class Transactions(MempoolAPI):
         json_data = MempoolAPI.validateResponse(response)
         return json_data
     
-    @staticmethod
-    def Raw(txid): # https://mempool.space/docs/api/rest#get-transaction-raw
-        response = requests.get(f'https://mempool.space/api/tx/{txid}/raw')
-        json_data = MempoolAPI.validateResponse(response)
-        return json_data
+    @staticmethod # https://mempool.space/docs/api/rest#get-transaction-raw
+    def Raw(txid, save=False):
+        url = f'https://mempool.space/api/tx/{txid}/raw'
+        response = requests.get(url, stream=True)
+
+        # Check for successful response status code
+        if response.status_code != 200:
+            raise requests.exceptions.RequestException(f"Error: API request failed. Status code: {response.status_code}")
+
+        # Return raw binary data
+        if not save:
+            return response.content
+
+        # Save raw data to disk
+        filename = f"{txid}.raw"  # Customize filename if needed
+        with open(filename, 'wb') as f:
+            for chunk in response.iter_content(1024):
+                f.write(chunk)
+        print(f"Raw data saved to: {filename}")
+        return None
     
     @staticmethod
     def RBFHistory(txid): # https://mempool.space/docs/api/rest#get-transaction-rbf-history
