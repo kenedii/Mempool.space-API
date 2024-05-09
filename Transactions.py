@@ -1,13 +1,10 @@
 from MempoolAPI import MempoolAPI
 import requests
-import os
-import urllib.request
-import json
 
 class Transactions(MempoolAPI):
     @staticmethod
     def ChildPayForParent(txid): # https://mempool.space/docs/api/rest#get-cpfp
-        response = requests.get(f'https://mempool.space/api/v1/services/cpfp/{txid}')
+        response = requests.get(f'https://mempool.space/api/v1/cpfp/{txid}')
         json_data = MempoolAPI.validateResponse(response)
         return json_data
     
@@ -79,5 +76,3 @@ class Transactions(MempoolAPI):
             return json_data
         except TypeError:
             raise TypeError('Invalid input type. Must be string or list of txids.')
-
-            
