@@ -171,7 +171,7 @@ class Mining(MempoolAPI):
         # -Current (real-time) hashrate, -Current (real-time) difficulty,
         # -Historical daily average hashrates, -Historical difficulty
         # Valid values for :timePeriod are 1m, 3m, 6m, 1y, 2y, 3y. If no time interval is specified, all available data is returned.
-        response = requests.get(f'https://mempool.space/api/v1/mining/hashrate/{timeperiod}')
+        response = requests.get(f'https://mempool.space/api/v1/mining/hashrate/{timePeriod}')
         json_data = MempoolAPI.validateResponse(response)
         info = {'difficulty': json_data['difficulty'],
                 'currentHashrate': json_data['currentHashrate'],
