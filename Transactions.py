@@ -73,7 +73,7 @@ class Transactions(MempoolAPI):
     
     @staticmethod
     def RBFHistory(txid): # https://mempool.space/docs/api/rest#get-transaction-rbf-history
-        response = requests.get(f'https://mempool.space/api/tx/{txid}/rbf')
+        response = requests.get(f'https://mempool.space/api/v1/tx/{txid}/rbf')
         json_data = MempoolAPI.validateResponse(response)
         return json_data
     
