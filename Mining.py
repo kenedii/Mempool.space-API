@@ -1,7 +1,5 @@
 from MempoolAPI import MempoolAPI
 import requests
-import os
-import urllib.request
 
 
 class Mining(MempoolAPI):

@@ -1,12 +1,9 @@
 from MempoolAPI import MempoolAPI
 import requests
-import os
-import urllib.request
-import json
 
 class Accelerator(MempoolAPI):
     @staticmethod
-    def CalculateEstimatedCosts(txInput):
+    def CalculateEstimatedCosts(txInput): # https://mempool.space/docs/api/rest#accelerator-estimate
         url = "https://mempool.space/api/v1/services/accelerator/estimate"
 
         # Data to send in the request body
@@ -30,14 +27,14 @@ class Accelerator(MempoolAPI):
             return None
         
     @staticmethod
-    def PendingAccelerations():
+    def PendingAccelerations(): # https://mempool.space/docs/api/rest#accelerator-pending
         response = requests.get("https://mempool.space/api/v1/services/accelerator/accelerations")
         json_data = MempoolAPI.validateResponse(response)
         json_data = dict(json_data)
         return json_data
     
     @staticmethod
-    def AccelerationHistory(blockHash=""):
+    def AccelerationHistory(blockHash=""): # https://mempool.space/docs/api/rest#accelerator-public-history
         if blockHash:
             url = f"https://mempool.space/api/v1/services/accelerator/accelerations/history?blockHash={blockHash}"
         else:
