@@ -9,13 +9,13 @@ class Transactions(MempoolAPI):
         return json_data
     
     @staticmethod
-    def Transaction(txid):
+    def Transaction(txid): # https://mempool.space/docs/api/rest#get-transaction
         response = requests.get(f'https://mempool.space/api/tx/{txid}')
         json_data = MempoolAPI.validateResponse(response)
         return json_data
     
     @staticmethod
-    def Hex(txid):
+    def Hex(txid): # https://mempool.space/docs/api/rest#get-transaction-hex
         url = f'https://mempool.space/api/tx/{txid}/hex'
         response = requests.get(url)
         # Check for successful response status code
@@ -25,48 +25,48 @@ class Transactions(MempoolAPI):
         return response.text
     
     @staticmethod
-    def MerkleblockProof(txid):
+    def MerkleblockProof(txid): # https://mempool.space/docs/api/rest#get-transaction-merkleblock-proof
         response = requests.get(f'https://mempool.space/api/tx/{txid}/merkleblock-proof')
         json_data = MempoolAPI.validateResponse(response)
         return json_data
     
-    @staticmethod
-    def MerkleProof(txid):
+    @staticmethod 
+    def MerkleProof(txid): # https://mempool.space/docs/api/rest#get-transaction-merkle-proof
         response = requests.get(f'https://mempool.space/api/tx/{txid}/merkle-proof')
         json_data = MempoolAPI.validateResponse(response)
         return json_data
     
     @staticmethod
-    def Outspend(txid, vout):
+    def Outspend(txid, vout): # https://mempool.space/docs/api/rest#get-transaction-outspend
         response = requests.get(f'https://mempool.space/api/tx/{txid}/outspend/{vout}')
         json_data = MempoolAPI.validateResponse(response)
         return json_data
     
     @staticmethod
-    def Outspends(txid):
+    def Outspends(txid): # https://mempool.space/docs/api/rest#get-transaction-outspends
         response = requests.get(f'https://mempool.space/api/tx/{txid}/outspends')
         json_data = MempoolAPI.validateResponse(response)
         return json_data
     
     @staticmethod
-    def Raw(txid):
+    def Raw(txid): # https://mempool.space/docs/api/rest#get-transaction-raw
         response = requests.get(f'https://mempool.space/api/tx/{txid}/raw')
         json_data = MempoolAPI.validateResponse(response)
         return json_data
     
     @staticmethod
-    def RBFHistory(txid):
+    def RBFHistory(txid): # https://mempool.space/docs/api/rest#get-transaction-rbf-history
         response = requests.get(f'https://mempool.space/api/tx/{txid}/rbf')
         json_data = MempoolAPI.validateResponse(response)
         return json_data
     
     @staticmethod
-    def Status(txid):
+    def Status(txid): # https://mempool.space/docs/api/rest#get-transaction-status
         response = requests.get(f'https://mempool.space/api/tx/{txid}/status')
         json_data = MempoolAPI.validateResponse(response)
         return json_data
     
-    @staticmethod
+    @staticmethod # https://mempool.space/docs/api/rest#get-transaction-times
     def Times(txid): # Accepts string or list of txids
         try:
             if type(txid) == str:
