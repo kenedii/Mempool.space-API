@@ -58,18 +58,18 @@ class Transactions(MempoolAPI):
         # Check for successful response status code
         if response.status_code != 200:
             raise requests.exceptions.RequestException(f"Error: API request failed. Status code: {response.status_code}")
-
+        content = response.content
         # Return raw binary data
         if not save:
-            return response.content
+            return content
 
         # Save raw data to disk
-        filename = f"{txid}.raw"  # Customize filename if needed
+        filename = f"{txid}"  # Customize filename if needed
         with open(filename, 'wb') as f:
             for chunk in response.iter_content(1024):
                 f.write(chunk)
         print(f"Raw data saved to: {filename}")
-        return None
+        return content
     
     @staticmethod
     def RBFHistory(txid): # https://mempool.space/docs/api/rest#get-transaction-rbf-history
