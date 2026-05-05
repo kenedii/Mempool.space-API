@@ -84,6 +84,24 @@ class MempoolAPI:
         return info
 
     @staticmethod
+    def PreciseFees(min_fee=None, url=None): # Returns suggested fees with decimal precision when available.
+        if url is None:
+            url = "https://mempool.space/api/v1/fees/precise"
+            if min_fee is not None:
+                url += f"?min={min_fee}"
+
+        response = requests.get(url)
+        json_data = MempoolAPI.validateResponse(response)
+        info = {'fastestFee': json_data['fastestFee'],
+                'halfHourFee': json_data['halfHourFee'],
+                'hourFee': json_data['hourFee'],
+                'economyFee': json_data['economyFee'],
+                'minimumFee': json_data['minimumFee']
+                }
+
+        return info
+
+    @staticmethod
     def MempoolBlocksFees(): # Returns current mempool as projected blocks.
         response = requests.get("https://mempool.space/api/v1/fees/mempool-blocks")
         json_data = MempoolAPI.validateResponse(response)
